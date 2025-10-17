@@ -34,10 +34,10 @@ graph TB
     H_ORDER --- S_ORDER_METRICS
     
     classDef hubStyle fill:#bbdefb,stroke:#1976d2,stroke-width:2px,color:#000
-    classDef linkStyle fill:#c8e6c9,stroke:#388e3c,stroke-width:2px,color:#000
+    classDef linkClass fill:#c8e6c9,stroke:#388e3c,stroke-width:2px,color:#000
     classDef satStyle fill:#ffe0b2,stroke:#f57c00,stroke-width:2px,color:#000
     
     class H_CUSTOMER,H_PRODUCT,H_LOCATION,H_ORDER hubStyle
-    class L_ORDER_CUSTOMER,L_ORDER_PRODUCT,L_ORDER_LOCATION linkStyle
+    class L_ORDER_CUSTOMER,L_ORDER_PRODUCT,L_ORDER_LOCATION linkClass
     class S_CUSTOMER_ATTR,S_PRODUCT_ATTR,S_LOCATION_ATTR,S_ORDER_METRICS satStyle
 ```
