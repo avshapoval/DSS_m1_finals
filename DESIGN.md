@@ -72,16 +72,16 @@ erDiagram
     }
     
     S_CUSTOMER_ATTR {
-        bytea customer_hkey PK_FK
-        timestamp load_dts PK
+        bytea customer_hkey "PK, FK"
+        timestamp load_dts "PK"
         text segment
         bytea hashdiff
         text record_source
     }
     
     S_PRODUCT_ATTR {
-        bytea product_hkey PK_FK
-        timestamp load_dts PK
+        bytea product_hkey "PK, FK"
+        timestamp load_dts "PK"
         text category
         text sub_category
         bytea hashdiff
@@ -89,8 +89,8 @@ erDiagram
     }
     
     S_LOCATION_ATTR {
-        bytea location_hkey PK_FK
-        timestamp load_dts PK
+        bytea location_hkey "PK, FK"
+        timestamp load_dts "PK"
         text country
         text state
         text city
@@ -101,8 +101,8 @@ erDiagram
     }
     
     S_ORDER_METRICS {
-        bytea order_hkey PK_FK
-        timestamp load_dts PK
+        bytea order_hkey "PK, FK"
+        timestamp load_dts "PK"
         text ship_mode
         numeric sales
         integer quantity
