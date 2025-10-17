@@ -1,133 +1,125 @@
 ## Data Vault Design (Sample Superstore)
 
-### Легенда
+**Легенда:**
 - **Хабы (Hubs)** — бизнес-ключи сущностей
 - **Линки (Links)** — связи между хабами
 - **Спутники (Satellites)** — атрибуты и метрики
 
----
-
-### Модель данных
-
 ```mermaid
-erDiagram
-    H_CUSTOMER ||--o{ L_ORDER_CUSTOMER : ""
-    H_ORDER ||--o{ L_ORDER_CUSTOMER : ""
-    H_ORDER ||--o{ L_ORDER_PRODUCT : ""
-    H_PRODUCT ||--o{ L_ORDER_PRODUCT : ""
-    H_ORDER ||--o{ L_ORDER_LOCATION : ""
-    H_LOCATION ||--o{ L_ORDER_LOCATION : ""
-    H_CUSTOMER ||--o{ S_CUSTOMER_ATTR : ""
-    H_PRODUCT ||--o{ S_PRODUCT_ATTR : ""
-    H_LOCATION ||--o{ S_LOCATION_ATTR : ""
-    H_ORDER ||--o{ S_ORDER_METRICS : ""
-
-    H_CUSTOMER {
-        bytea customer_hkey PK
-        text bk_customer
-        timestamp load_dts
-        text record_source
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#bbdefb','primaryTextColor':'#000','primaryBorderColor':'#1976d2','secondaryColor':'#c8e6c9','secondaryBorderColor':'#388e3c','tertiaryColor':'#ffe0b2','tertiaryBorderColor':'#f57c00'}}}%%
+classDiagram
+    class H_CUSTOMER {
+        <<Hub>>
+        +bytea customer_hkey
+        +text bk_customer
+        +timestamp load_dts
+        +text record_source
     }
     
-    H_PRODUCT {
-        bytea product_hkey PK
-        text bk_product
-        timestamp load_dts
-        text record_source
+    class H_PRODUCT {
+        <<Hub>>
+        +bytea product_hkey
+        +text bk_product
+        +timestamp load_dts
+        +text record_source
     }
     
-    H_LOCATION {
-        bytea location_hkey PK
-        text bk_location
-        timestamp load_dts
-        text record_source
+    class H_LOCATION {
+        <<Hub>>
+        +bytea location_hkey
+        +text bk_location
+        +timestamp load_dts
+        +text record_source
     }
     
-    H_ORDER {
-        bytea order_hkey PK
-        text bk_order
-        timestamp load_dts
-        text record_source
+    class H_ORDER {
+        <<Hub>>
+        +bytea order_hkey
+        +text bk_order
+        +timestamp load_dts
+        +text record_source
     }
     
-    L_ORDER_CUSTOMER {
-        bytea l_order_customer_hkey PK
-        bytea order_hkey FK
-        bytea customer_hkey FK
-        timestamp load_dts
-        text record_source
+    class L_ORDER_CUSTOMER {
+        <<Link>>
+        +bytea l_order_customer_hkey
+        +bytea order_hkey
+        +bytea customer_hkey
+        +timestamp load_dts
+        +text record_source
     }
     
-    L_ORDER_PRODUCT {
-        bytea l_order_product_hkey PK
-        bytea order_hkey FK
-        bytea product_hkey FK
-        timestamp load_dts
-        text record_source
+    class L_ORDER_PRODUCT {
+        <<Link>>
+        +bytea l_order_product_hkey
+        +bytea order_hkey
+        +bytea product_hkey
+        +timestamp load_dts
+        +text record_source
     }
     
-    L_ORDER_LOCATION {
-        bytea l_order_location_hkey PK
-        bytea order_hkey FK
-        bytea location_hkey FK
-        timestamp load_dts
-        text record_source
+    class L_ORDER_LOCATION {
+        <<Link>>
+        +bytea l_order_location_hkey
+        +bytea order_hkey
+        +bytea location_hkey
+        +timestamp load_dts
+        +text record_source
     }
     
-    S_CUSTOMER_ATTR {
-        bytea customer_hkey "PK,FK"
-        timestamp load_dts "PK"
-        text segment
-        bytea hashdiff
-        text record_source
+    class S_CUSTOMER_ATTR {
+        <<Satellite>>
+        +bytea customer_hkey
+        +timestamp load_dts
+        +text segment
+        +bytea hashdiff
+        +text record_source
     }
     
-    S_PRODUCT_ATTR {
-        bytea product_hkey "PK,FK"
-        timestamp load_dts "PK"
-        text category
-        text sub_category
-        bytea hashdiff
-        text record_source
+    class S_PRODUCT_ATTR {
+        <<Satellite>>
+        +bytea product_hkey
+        +timestamp load_dts
+        +text category
+        +text sub_category
+        +bytea hashdiff
+        +text record_source
     }
     
-    S_LOCATION_ATTR {
-        bytea location_hkey "PK,FK"
-        timestamp load_dts "PK"
-        text country
-        text state
-        text city
-        text postal_code
-        text region
-        bytea hashdiff
-        text record_source
+    class S_LOCATION_ATTR {
+        <<Satellite>>
+        +bytea location_hkey
+        +timestamp load_dts
+        +text country
+        +text state
+        +text city
+        +text postal_code
+        +text region
+        +bytea hashdiff
+        +text record_source
     }
     
-    S_ORDER_METRICS {
-        bytea order_hkey "PK,FK"
-        timestamp load_dts "PK"
-        text ship_mode
-        numeric sales
-        integer quantity
-        numeric discount
-        numeric profit
-        bytea hashdiff
-        text record_source
+    class S_ORDER_METRICS {
+        <<Satellite>>
+        +bytea order_hkey
+        +timestamp load_dts
+        +text ship_mode
+        +numeric sales
+        +integer quantity
+        +numeric discount
+        +numeric profit
+        +bytea hashdiff
+        +text record_source
     }
+    
+    H_CUSTOMER -- L_ORDER_CUSTOMER
+    H_ORDER -- L_ORDER_CUSTOMER
+    H_ORDER -- L_ORDER_PRODUCT
+    H_PRODUCT -- L_ORDER_PRODUCT
+    H_ORDER -- L_ORDER_LOCATION
+    H_LOCATION -- L_ORDER_LOCATION
+    H_CUSTOMER -- S_CUSTOMER_ATTR
+    H_PRODUCT -- S_PRODUCT_ATTR
+    H_LOCATION -- S_LOCATION_ATTR
+    H_ORDER -- S_ORDER_METRICS
 ```
-
----
-
-### Бизнес-ключи
-
-**Hub Customer:** `segment|country|state|city|postal_code`  
-**Hub Product:** `category|sub_category`  
-**Hub Location:** `country|state|city|postal_code|region`  
-**Hub Order:** `ship_mode|segment|country|state|city|postal_code|region|category|sub_category`
-
-### Технические детали
-
-- **Хеширование:** SHA-256 через `digest(..., 'sha256')`
-- **hashdiff:** SHA-256 от всех атрибутов спутника
-- **DISTRIBUTED BY:** hash-ключ для оптимизации JOIN
-- **Type-2 SCD:** композитный PK (hkey, load_dts) в спутниках
