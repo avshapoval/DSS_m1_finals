@@ -1,12 +1,15 @@
 ## Data Vault Design (Sample Superstore)
 
-**Легенда:**
-- **Синий** — Хабы (Hubs) — бизнес-ключи
-- **Зеленый** — Линки (Links) — связи
-- **Оранжевый** — Спутники (Satellites) — атрибуты
+### Легенда
+- **Хабы (Hubs)** — бизнес-ключи сущностей
+- **Линки (Links)** — связи между хабами
+- **Спутники (Satellites)** — атрибуты и метрики
+
+---
+
+### Модель данных
 
 ```mermaid
-%%{init: {'theme':'default'}}%%
 erDiagram
     H_CUSTOMER ||--o{ L_ORDER_CUSTOMER : ""
     H_ORDER ||--o{ L_ORDER_CUSTOMER : ""
@@ -72,7 +75,7 @@ erDiagram
     }
     
     S_CUSTOMER_ATTR {
-        bytea customer_hkey "PK, FK"
+        bytea customer_hkey "PK,FK"
         timestamp load_dts "PK"
         text segment
         bytea hashdiff
@@ -80,7 +83,7 @@ erDiagram
     }
     
     S_PRODUCT_ATTR {
-        bytea product_hkey "PK, FK"
+        bytea product_hkey "PK,FK"
         timestamp load_dts "PK"
         text category
         text sub_category
@@ -89,7 +92,7 @@ erDiagram
     }
     
     S_LOCATION_ATTR {
-        bytea location_hkey "PK, FK"
+        bytea location_hkey "PK,FK"
         timestamp load_dts "PK"
         text country
         text state
@@ -101,7 +104,7 @@ erDiagram
     }
     
     S_ORDER_METRICS {
-        bytea order_hkey "PK, FK"
+        bytea order_hkey "PK,FK"
         timestamp load_dts "PK"
         text ship_mode
         numeric sales
@@ -113,25 +116,18 @@ erDiagram
     }
 ```
 
-<style>
-/* Хабы - синий */
-[id*="H_CUSTOMER"], [id*="H_PRODUCT"], [id*="H_LOCATION"], [id*="H_ORDER"] {
-    fill: #bbdefb !important;
-    stroke: #1976d2 !important;
-    stroke-width: 2px !important;
-}
+---
 
-/* Линки - зеленый */
-[id*="L_ORDER"] {
-    fill: #c8e6c9 !important;
-    stroke: #388e3c !important;
-    stroke-width: 2px !important;
-}
+### Бизнес-ключи
 
-/* Спутники - оранжевый */
-[id*="S_CUSTOMER"], [id*="S_PRODUCT"], [id*="S_LOCATION"], [id*="S_ORDER"] {
-    fill: #ffe0b2 !important;
-    stroke: #f57c00 !important;
-    stroke-width: 2px !important;
-}
-</style>
+**Hub Customer:** `segment|country|state|city|postal_code`  
+**Hub Product:** `category|sub_category`  
+**Hub Location:** `country|state|city|postal_code|region`  
+**Hub Order:** `ship_mode|segment|country|state|city|postal_code|region|category|sub_category`
+
+### Технические детали
+
+- **Хеширование:** SHA-256 через `digest(..., 'sha256')`
+- **hashdiff:** SHA-256 от всех атрибутов спутника
+- **DISTRIBUTED BY:** hash-ключ для оптимизации JOIN
+- **Type-2 SCD:** композитный PK (hkey, load_dts) в спутниках
